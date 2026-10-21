@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+
+# The two repositories are expected to be siblings, matching:
+#   ~/Documents/development/ptouch
+#   ~/Documents/development/Gridfinity-Component-Labels
+# Override with PTOUCH_DIR=/somewhere/else if required.
+PTOUCH_DIR="${PTOUCH_DIR:-$REPO_DIR/../ptouch}"
+
+if [[ ! -f "$PTOUCH_DIR/pyproject.toml" ]]; then
+    echo "Cannot find ptouch checkout at: $PTOUCH_DIR" >&2
+    echo "Set PTOUCH_DIR=/path/to/ptouch if it lives elsewhere." >&2
+    exit 2
+fi
+
+exec uv run --project "$PTOUCH_DIR" python "$SCRIPT_DIR/label_print.py" "$@"
